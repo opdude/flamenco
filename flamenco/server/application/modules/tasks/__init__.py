@@ -429,6 +429,7 @@ class TaskListApi(Resource):
         tasks_list = []
         for task in tasks:
             t = {
+            "id" : task.id,
             "name" : task.name,
             "status" : task.status,
             "priority" : task.priority,

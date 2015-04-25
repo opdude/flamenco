@@ -61,7 +61,7 @@ from modules.filebrowser import FileBrowserRootApi
 api.add_resource(FileBrowserRootApi, '/browse')
 api.add_resource(FileBrowserApi, '/browse/<path:path>')
 
-from modules.jobs import JobListApi, JobExtrasOutputApi
+from modules.jobs import JobListApi, JobExtrasOutputApi, TaskImageOutputApi
 from modules.jobs import JobApi
 from modules.jobs import JobDeleteApi
 from modules.jobs import JobThumbnailListApi
@@ -85,6 +85,7 @@ api.add_resource(TaskApi, '/tasks/<int:task_id>')
 api.add_resource(TaskListApi, '/tasks')
 api.add_resource(TaskGeneratorApi, '/tasks/generate')
 api.add_resource(TaskFileOutputApi, '/task/file/output/<int:task_id>')
+api.add_resource(TaskImageOutputApi, '/task/image/<int:task_id>')
 
 from modules.main import main
 from modules.stats import stats

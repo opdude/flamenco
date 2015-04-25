@@ -490,13 +490,16 @@ class JobThumbnailListApi(Resource):
         if not task:
             return
         thumbnail_filename = "thumbnail_%s.png" % task.job_id
+        task_image_filename = "image_%s_%s.png" % (task.job_id, task.id)
 
         file = request.files['file']
         if file and self.allowed_file(file.filename):
             filepath=os.path.join( app.config['TMP_FOLDER'] , thumbnail_filename)
             filepath_last=os.path.join( app.config['TMP_FOLDER'] , 'thumbnail_0.png')
+            task_image_path=os.path.join( app.config['TMP_FOLDER'] , task_image_filename)
             file.save(filepath)
             shutil.copy2(filepath, filepath_last)
+            shutil.copy2(filepath, task_image_path)
 
 
 class JobThumbnailApi(Resource):
@@ -546,6 +549,29 @@ class JobThumbnailApi(Resource):
                 with app.open_resource('static/missing_thumbnail.png') as thumb_file:
                     return thumb_file.read()
             return False
+        bin = generate()
+        if bin:
+            return Response(bin, mimetype='image/png')
+        else:
+            return '', 404
+
+
+class TaskImageOutputApi(Resource):
+    def get(self, task_id=None):
+        """Returns the rendered image for a job
+        """
+        task = Task.query.get(task_id)
+
+        def generate():
+            filename = 'image_{0}_{1}.png'.format(task.job_id, task_id)
+            file_path_original_thumbnail = os.path.join(app.config['TMP_FOLDER'], filename)
+            if os.path.isfile(file_path_original_thumbnail):
+                file = open(str(file_path_original_thumbnail), 'r')
+
+                return file.read()
+            else:
+                with app.open_resource('static/missing_thumbnail.png') as file:
+                    return file.read()
         bin = generate()
         if bin:
             return Response(bin, mimetype='image/png')

@@ -39,6 +39,7 @@
                             <th width="20%">Name</th>
                             <th width="20%">Status</th>
                             <th width="20%">Log</th>
+                            <th width="20%">Image</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,6 +53,9 @@
                                 </td>
                                 <td>
                                     {{task['log']|truncate(250)}}
+                                </td>
+                                <td>
+                                    <a href="{{task['image']}}"><img src="{{task['image']}}" /></a>
                                 </td>
                             </tr>
                         {% endfor %}
