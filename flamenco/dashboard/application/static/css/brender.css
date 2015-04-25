@@ -110,6 +110,11 @@ h2 {
     color:red;
 }
 
+.task-image {
+    max-height: 100px;
+    max-width: 300px;
+}
+
 #  --- client status -----
 
 /*.enabled {
