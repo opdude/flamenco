@@ -583,3 +583,24 @@ class JobFileOutputApi(Resource):
                     jobzip.write(filepath, fname)
 
         return send_from_directory(jobpath, zname, as_attachment=True)
+
+
+class JobExtrasOutputApi(Resource):
+    def get(self, job_id):
+        """Given a task_id returns the output zip file
+        """
+        serverstorage = app.config['SERVER_STORAGE']
+        job = Job.query.get(job_id)
+        projectpath = os.path.join(serverstorage, str(job.project_id))
+        jobpath = os.path.join(projectpath, str(job_id))
+        zippath = os.path.join(jobpath, 'extras')
+        zname = 'extras_{0}.zip'.format(job_id)
+        jobfile = os.path.join(jobpath, zname)
+
+        with ZipFile(jobfile, 'w') as jobzip:
+            for dirpath, dirnames, filenames in os.walk(zippath):
+                for fname in filenames:
+                    filepath = os.path.join(dirpath, fname)
+                    jobzip.write(filepath, fname)
+
+        return send_from_directory(jobpath, zname, as_attachment=True)

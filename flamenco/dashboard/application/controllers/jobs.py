@@ -76,6 +76,7 @@ def job(job_id):
     #Tasks
     job['thumbnail'] = 'http://%s/jobs/thumbnails/%s' % (BRENDER_SERVER, job_id)
     job['output_files'] = 'http://%s/jobs/file/output/%s' % (BRENDER_SERVER, job_id)
+    job['extra_files'] = 'http://%s/jobs/file/extras/%s' % (BRENDER_SERVER, job_id)
     return render_template('jobs/view.html', job=job)
 
 
