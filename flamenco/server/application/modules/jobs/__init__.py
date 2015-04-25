@@ -11,7 +11,7 @@ from os.path import exists
 from shutil import rmtree
 from functools import partial
 from sqlalchemy import or_
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from flask import jsonify
 from flask import Response
@@ -597,10 +597,14 @@ class JobExtrasOutputApi(Resource):
         zname = 'extras_{0}.zip'.format(job_id)
         jobfile = os.path.join(jobpath, zname)
 
-        with ZipFile(jobfile, 'w') as jobzip:
-            for dirpath, dirnames, filenames in os.walk(zippath):
-                for fname in filenames:
-                    filepath = os.path.join(dirpath, fname)
-                    jobzip.write(filepath, fname)
+        with ZipFile(jobfile, 'w', ZIP_DEFLATED) as zfile:
+            for dir_name, sub_dirs, files in os.walk(zippath):
+                arc_dir = dir_name.replace(zippath, '')
+                if len(arc_dir):
+                    zfile.write(dir_name, arc_dir)
+                for filename in files:
+                    abs_name = os.path.join(dir_name, filename)
+                    arc_name = os.path.join(arc_dir, filename)
+                    zfile.write(abs_name, arc_name)
 
         return send_from_directory(jobpath, zname, as_attachment=True)
