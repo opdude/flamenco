@@ -27,6 +27,7 @@ class job_compiler():
 
         task_settings['frame_start']=job_settings['frame_start']
         task_settings['frame_end']=job_settings['frame_start']
+        task_settings['render_extras'] = job_settings['render_extras']
 
         tiles = 4
         task_settings['tiles']=tiles
