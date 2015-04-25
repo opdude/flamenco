@@ -3,6 +3,8 @@ import tempfile
 import logging
 # from threading import Thread
 from flask import Flask
+import shutil
+
 app = Flask(__name__)
 
 def clean_dir(cleardir, keep_job=None):
@@ -15,7 +17,11 @@ def clean_dir(cleardir, keep_job=None):
             for name in dirs:
                 if name == str(keep_job):
                     continue
-                os.rmdir(os.path.join(root, name))
+                try:
+                    path = os.path.join(root, name)
+                    shutil.rmtree(path)
+                except shutil.Error:
+                    logging.debug("Failed to remove {0}", path)
 
 try:
     # Load config.py if available
