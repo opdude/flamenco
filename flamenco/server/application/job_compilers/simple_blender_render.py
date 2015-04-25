@@ -32,6 +32,7 @@ class job_compiler():
         task_settings['output_path_win'] = '#####'
         task_settings['output_path_osx'] = '#####'
         task_settings['priority'] = job.priority
+        task_settings['render_extras'] = job_settings['render_extras']
 
         #Chunk Generation
         job_frames_count = job_settings['frame_end'] - job_settings['frame_start'] + 1
@@ -82,4 +83,5 @@ class job_compiler():
 
             task_settings['frame_end'] = task_settings['frame_start'] + job_chunks_remainder - 1
             name="{0}-{1}".format(task_settings['frame_start'], task_settings['frame_end'])
+
             create_task(job.id, task_type, task_settings, name, None, parser)

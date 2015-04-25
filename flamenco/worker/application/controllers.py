@@ -8,9 +8,7 @@ import json
 import select
 import requests
 import logging
-from zipfile import ZipFile
-from zipfile import BadZipfile
-from zipfile import zlib
+from zipfile import ZipFile, BadZipfile, zlib, ZIP_DEFLATED
 from threading import Thread
 from threading import Lock
 from threading import Timer
@@ -579,16 +577,38 @@ def run_blender_in_thread(options):
         str(options['task_id']),
     )
 
-    with ZipFile(taskfile, 'w') as taskzip:
-        f = []
-        for dirpath, dirnames, filenames in os.walk(zippath):
-            for fname in filenames:
-                filepath = os.path.join(dirpath, fname)
-                taskzip.write(filepath, fname)
+    # Zips archives with both files and directories
+    def archive_files(zip_files, zip_out):
+        with ZipFile(zip_out, 'w', ZIP_DEFLATED) as zfile:
+            for src in zip_files:
+                if os.path.exists(src):
+                    if os.path.isdir(src):
+                        for dir_name, sub_dirs, files in os.walk(src):
+                            arc_dir = dir_name.replace(src, '')
+                            if len(arc_dir):
+                                zfile.write(dir_name, arc_dir)
+                            for filename in files:
+                                abs_name = os.path.join(dir_name, filename)
+                                arc_name = os.path.join(arc_dir, filename)
+                                zfile.write(abs_name, arc_name)
+                    else:
+                        arc_name = os.path.relpath(src, '/')
+                        zfile.write(src, arc_name)
+
+    archive_files([zippath], taskfile)
 
     tfiles = [
         ('taskfile', (
             'taskfile.zip', open(taskfile, 'rb'), 'application/zip'))]
+
+    # Collect and zip extras specified in the config
+    if 'render_extras' in options['settings'] and len(options['settings']['render_extras']):
+        render_extras_config = options['settings']['render_extras']
+        zip_file = os.path.join(taskpath, 'taskextrasout_{0}_{1}.zip'.format(options['job_id'], options['task_id']))
+        files = [os.path.join(taskpath, str(options['job_id']), x) for x in render_extras_config]
+        archive_files(files, zip_file)
+        tfiles.append(('extrasfile', ('extrasfile.zip', open(zip_file,'rb'), 'application/zip')))
+
 
     params = {
         'status': status,

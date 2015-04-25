@@ -45,6 +45,7 @@ parser.add_argument('log', type=str)
 parser.add_argument('time_cost', type=int)
 parser.add_argument('activity', type=str)
 parser.add_argument('taskfile', type=FileStorage, location='files')
+parser.add_argument('extrasfile', type=FileStorage, location='files')
 
 tasks_list_parser = reqparse.RequestParser()
 tasks_list_parser.add_argument('job_id', type=int)
@@ -366,6 +367,30 @@ class TaskApi(Resource):
                 return '', 404
 
             os.remove(taskfile)
+
+        if args['extrasfile']:
+            jobpath = os.path.join(projectpath, str(job.id))
+            try:
+                os.mkdir(jobpath)
+            except:
+                pass
+            try:
+                os.mkdir(os.path.join(jobpath, 'extras'))
+            except:
+                pass
+            extrasfile = os.path.join(
+                    app.config['TMP_FOLDER'], 'extrasfile_{0}_{1}.zip'.format(job.id, task_id))
+            args['extrasfile'].save(extrasfile)
+
+            zippath = os.path.join(jobpath, 'extras')
+
+            try:
+                with ZipFile(extrasfile, 'r') as jobzip:
+                    jobzip.extractall(path=zippath)
+            except:
+                os.remove(zippath)
+                return '', 404
+
 
         status_old = task.status
         task.status = status

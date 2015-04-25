@@ -45,6 +45,7 @@ status_parser.add_argument('time_cost', type=int)
 status_parser.add_argument('job_id', type=int)
 status_parser.add_argument('task_id', type=int)
 status_parser.add_argument('taskfile', type=FileStorage, location='files')
+status_parser.add_argument('extrasfile', type=FileStorage, location='files')
 
 parser_thumbnail = reqparse.RequestParser()
 parser_thumbnail.add_argument("task_id", type=int)
@@ -340,7 +341,7 @@ class TaskApi(Resource):
             if not task:
                 return 'Task is cancelled', 403"""
 
-        jobfile=None
+        jobfile=[]
         if args['taskfile']:
             managerstorage = app.config['MANAGER_STORAGE']
             jobpath = os.path.join(managerstorage, str(args['job_id']))
@@ -372,9 +373,26 @@ class TaskApi(Resource):
                             depzip.write(filepath, fname)
 
             # Send to server
-            jobfile = [
+            jobfile.append(
                 ('taskfile', (
-                    'taskfile.zip', open(zippath, 'rb'), 'application/zip'))]
+                    'taskfile.zip', open(zippath, 'rb'), 'application/zip')))
+
+        if args['extrasfile']:
+            managerstorage = app.config['MANAGER_STORAGE']
+            jobpath = os.path.join(managerstorage, str(args['job_id']))
+            try:
+                os.mkdir(jobpath)
+            except:
+                pass
+            zippath = os.path.join(
+                    jobpath,
+                    'extrasfile_{0}_{1}.zip'.format(args['job_id'], task_id))
+            args['extrasfile'].save(zippath)
+
+            # Send to server
+            jobfile.append(
+                ('extrasfile', (
+                    'extrasfile.zip', open(zippath, 'rb'), 'application/zip')))
 
         params = { 'id' : task_id, 'status': args['status'], 'time_cost' : args['time_cost'], 'log' : args['log'], 'activity' : args['activity'] }
         r = http_request(app.config['BRENDER_SERVER'], '/tasks/{0}'.format(task_id), 'post', params=params, files=jobfile)
