@@ -52,7 +52,9 @@
                                     {{task['status']}}
                                 </td>
                                 <td>
-                                    {{task['log']|truncate(250)}}
+                                    {% if task['log'] %}
+                                        {{task['log']|truncate(250)}}
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <a href="{{task['image']}}"><img src="{{task['image']}}" /></a>
