@@ -1,5 +1,6 @@
 from application import db
 
+
 class Task(db.Model):
     """Tasks are created after a Shot is added
 
@@ -14,7 +15,7 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
     job = db.relationship('Job',
-        backref=db.backref('tasks', lazy='dynamic'))
+                          backref=db.backref('tasks', lazy='dynamic'))
     manager_id = db.Column(db.Integer())
     name = db.Column(db.String(64))
     status = db.Column(db.String(64))
@@ -27,6 +28,18 @@ class Task(db.Model):
     parser = db.Column(db.String(64))
     time_cost = db.Column(db.Integer())
     last_activity = db.Column(db.DateTime())
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "status": self.status,
+            "priority": self.priority,
+            "type": self.type,
+            "log": self.log,
+            "activity": self.activity,
+            "parser": self.parser
+        }
 
 
     def __repr__(self):

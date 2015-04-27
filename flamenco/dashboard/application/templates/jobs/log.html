@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+        
+{% block nav %}
+<ul class="nav navbar-nav navbar-left">
+  <span class="navbar-brand">Task: {{task.id}} of <a href="/jobs/{{job.id}}">{{ job.job_name }}</a> </span>
+</ul>
+{% endblock %}
+
+{% block body %}
+<div>
+    <pre>{{ task.log }}</pre>
+</div>
+
+{% endblock %}

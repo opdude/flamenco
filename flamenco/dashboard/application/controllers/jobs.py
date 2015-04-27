@@ -77,6 +77,7 @@ def job(job_id):
     job['thumbnail'] = 'http://%s/jobs/thumbnails/%s' % (BRENDER_SERVER, job_id)
     job['output_files'] = 'http://%s/jobs/file/output/%s' % (BRENDER_SERVER, job_id)
     job['extra_files'] = 'http://%s/jobs/file/extras/%s' % (BRENDER_SERVER, job_id)
+    job['id'] = job_id
 
     for task in job['tasks']:
         task['image'] = 'http://%s/task/image/%s' % (BRENDER_SERVER, task['id'])
@@ -90,6 +91,13 @@ def view_json(job_id):
     job['total_time'] = seconds_to_time(job['total_time'])
     job['average_time'] = seconds_to_time(job['average_time'])
     return jsonify(job)
+
+@jobs.route('/<int:job_id>/task/<int:task_id>/log')
+def view_log(job_id, task_id):
+    job = http_server_request('get', '/jobs/{0}'.format(job_id))
+    job['id'] = job_id
+    task = http_server_request('get', '/tasks/{0}'.format(task_id))
+    return render_template('jobs/log.html', job=job, task=task)
 
 
 @jobs.route('/browse/', defaults={'path': ''})

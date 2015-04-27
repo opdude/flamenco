@@ -54,6 +54,7 @@
                                 <td>
                                     {% if task['log'] %}
                                         {{task['log']|truncate(250)}}
+                                    <a href="/jobs/{{job.id}}/task/{{task.id}}/log">More</a>
                                     {% endif %}
                                 </td>
                                 <td>

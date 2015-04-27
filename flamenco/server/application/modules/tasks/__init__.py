@@ -420,26 +420,14 @@ class TaskApi(Resource):
         return '', 204
 
     def get(self, task_id):
-        return jsonify(task='task')
+        task = Task.query.get(task_id)
+        return jsonify(task.as_dict())
 
 
 class TaskListApi(Resource):
     @staticmethod
     def get_tasks_list(tasks):
-        tasks_list = []
-        for task in tasks:
-            t = {
-            "id" : task.id,
-            "name" : task.name,
-            "status" : task.status,
-            "priority" : task.priority,
-            "type" : task.type,
-            "log" : task.log,
-            "activity" : task.activity,
-            "parser" : task.parser
-            }
-            tasks_list.append(t)
-        return tasks_list
+        return [t.as_dict() for t in tasks]
 
     def get(self):
         args = tasks_list_parser.parse_args()
