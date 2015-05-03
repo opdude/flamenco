@@ -268,8 +268,21 @@ def worker_loop():
         if r != None and r.status_code == 200:
             task['compiler_settings'] = r.json()
 
-        if unzipok:
-            execute_task(task, files)
+            if unzipok:
+                execute_task(task, files)
+        else:
+            params = {
+                'status': 'ready',
+                }
+            try:
+                requests.patch(
+                    'http://' + app.config['FLAMENCO_MANAGER'] + '/tasks/' + str(task['task_id']),
+                data = params
+                )
+                logging.debug("Resetting task after an error")
+            except ConnectionError:
+                logging.error(
+                    'Cant connect with the Manager {0}'.format(app.config['FLAMENCO_MANAGER']))
 
     #LOOP_THREAD = Timer(5, worker_loop)
     #LOOP_THREAD.start()
