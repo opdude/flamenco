@@ -427,7 +427,19 @@ class TaskApi(Resource):
 class TaskListApi(Resource):
     @staticmethod
     def get_tasks_list(tasks):
-        return [t.as_dict() for t in tasks]
+        tasks_list = []
+        for task in tasks:
+            task_info = {
+            "name" : task.name,
+            "status" : task.status,
+            "priority" : task.priority,
+            "type" : task.type,
+            "log" : task.log,
+            "activity" : task.activity,
+            "parser" : task.parser
+            }
+            tasks_list.append(task_info)
+        return tasks_list
 
     def get(self):
         args = tasks_list_parser.parse_args()

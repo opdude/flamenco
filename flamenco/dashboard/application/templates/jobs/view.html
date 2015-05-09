@@ -21,8 +21,9 @@
                 <p>Frame End: {{ job['settings']['frame_end'] }}</p>
                 <p>Format: {{ job['settings']['format'] }}</p>
                 <p>Current Activity: {{ job['activity'] }}</p>
+                <p>{{job['id']}}</p>
                 <p><a href="{{ job['output_files'] }}">Ouput</a></p>
-                <p><a href="{{ job['extra_files'] }}">Extras</a></p>
+                <p><a href="{{ job['extra_files'] }}">Extras</a></p>                
             </div>
         </div>
         <div class="row">
