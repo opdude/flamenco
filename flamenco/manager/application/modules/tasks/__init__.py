@@ -119,6 +119,8 @@ class TaskCompiledApi(Resource):
         tasks = TaskManagementApi().get()
         if tasks[0] == ('', 404):
             return '', 400
+        elif tasks[0] == ('', 500):
+            return '', 500
         if not len(tasks) or not len(tasks[0]):
             return '', 400
         task = tasks[0]
@@ -274,8 +276,11 @@ class TaskManagementApi(Resource):
         return task, 202
 
     def get(self):
-        r = http_request(app.config['BRENDER_SERVER'], '/tasks/generate', 'get')
-        return r, 200
+        try:
+            r = http_request(app.config['BRENDER_SERVER'], '/tasks/generate', 'get')
+            return r, 200
+        except ConnectionError:
+            return '', 500
 
     #@marshal_with(task_fields)
     def delete(self):
